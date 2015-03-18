@@ -72,8 +72,13 @@ Rectangle {
     Image{
         id: automenseLogo
         source: "images/Automense_Logo.png"
-        x: Math.round(parent.width/3.0)
-        y: 0
+        anchors.left: ravenLogo.right
+        anchors.leftMargin: 5
+        anchors.top: parent.top
+        anchors.topMargin: -60
+        width: 180
+        height: 180
+        fillMode: Image.PreserveAspectFit
     }
 
     Image{
@@ -104,18 +109,24 @@ Rectangle {
 
     CameraButton {
         id: userButton
+        width: 100
+        height: 30
         text: "User"
+        anchors.leftMargin: 8
         onClicked: {
-            cameraUI.state = "PhotoCapture";
+            userDisp.visible = true
+            cameraUI.state = "NewUser";
+
         }
-        anchors.top: automenseLogo.bottom
-        anchors.topMargin: 10
-        anchors.left: automenseLogo.left
-        anchors.leftMargin: automenseLogo.width/4.0
+        anchors.top: ravenLogo.bottom
+        anchors.topMargin: 11
+        anchors.left: ravenLogo.left
     }
 
     CameraButton {
         id: adminButton
+        width: 100
+        height: 30
         text: "Admin"
         onClicked: {
             cameraUI.state = "AdminLogin";
@@ -125,14 +136,41 @@ Rectangle {
         anchors.left: userButton.left
     }
 
-    AdminLogin{
-        id: adLogin
+    CameraButton {
+        id: metaButton
+        width: 100
+        height: 30
+        text: "Meta"
+        onClicked: {
+            cameraUI.state = "AdminLogin";
+        }
         anchors.top: adminButton.bottom
         anchors.topMargin: 10
-        anchors.left: adminButton.left
+        anchors.left: userButton.left
+    }
+
+    AdminLogin{
+        id: adLogin
+        anchors.leftMargin: 8
+        anchors.top: automenseLogo.bottom
+        anchors.topMargin: 10
+        anchors.left: automenseLogo.left
         visible: false
         onLoginClicked: {
             cameraUI.state = "AdminView";
+        }
+    }
+
+    UserDisplay{
+        id: userDisp
+        anchors.left: automenseLogo.right
+        anchors.leftMargin: 20
+        anchors.top: parent.top
+        anchors.topMargin: 10
+        visible: false
+
+        onBackClicked: {
+            cameraUI.state = "StartState";
         }
     }
 
@@ -175,6 +213,7 @@ Rectangle {
                     adLogin.visible = false
                     adminPage.visible = false
                     cameraGlow.visible = false
+                    userDisp.visible = false
                 }
             }
         },
@@ -199,6 +238,16 @@ Rectangle {
         },
         State {
             name: "NewUser"
+            StateChangeScript {
+                script: {
+                    camera.captureMode = Camera.CaptureVideo
+                    camera.start()
+                    //cameraGlow.visible = true
+                }
+            }
+        },
+        State {
+            name: "UserDisplay"
             StateChangeScript {
                 script: {
                     camera.captureMode = Camera.CaptureVideo
@@ -251,15 +300,24 @@ Rectangle {
         id: viewfinder
         visible: cameraUI.state == "PhotoCapture" || cameraUI.state == "VideoCapture" || cameraUI.state == "NewUser"
 
-        x: 50
-        y: 50
+        x: 40
+        y: 170
         //width: parent.width - stillControls.buttonsPanelWidth
         //height: parent.height
         width: 320
         height: 240
 
         source: camera
-        autoOrientation: true
+        z:20
+        //autoOrientation: true
+    }
+
+    ParticleShader{
+        id: particles
+        x: 250
+        y: 250
+        visible: false
+        z:10
     }
 
     PhotoCaptureControls {

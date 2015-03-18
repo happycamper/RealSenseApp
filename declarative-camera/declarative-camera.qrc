@@ -30,5 +30,7 @@
         <file>images/raven_standard_cropped.png</file>
         <file>AdminPage.qml</file>
         <file>InfoPanel.qml</file>
+        <file>ParticleShader.qml</file>
+        <file>UserDisplay.qml</file>
     </qresource>
 </RCC>

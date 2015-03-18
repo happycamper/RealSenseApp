@@ -11,6 +11,7 @@ Rectangle {
 
     signal newUserClicked
     signal backClicked
+    signal addClicked
 
     Text{
         id: adminText
@@ -21,6 +22,47 @@ Rectangle {
         anchors.topMargin: 5
         anchors.left: parent.left
         anchors.leftMargin: 10
+    }
+
+    Timer{
+        id: faceCountDown
+        interval: 4000
+        running: false
+        repeat: false
+
+        onRunningChanged: {
+            if(!faceCountDown.running){
+                faceScanned.visible = true;
+                hideScanComplete.start();
+            }
+        }
+
+    }
+
+    Timer{
+        id: hideScanComplete
+        interval: 1000
+        running: false
+        repeat: false
+
+        onRunningChanged: {
+            if(!hideScanComplete.running){
+                faceScanned.visible = false;
+            }
+        }
+
+    }
+
+    Text{
+        id: faceScanned
+        text: "Scan Complete"
+        color: 'white'
+        anchors.top: levelWrapper.bottom
+        anchors.topMargin: 10
+        visible: false
+        anchors.left: addUser.right
+        anchors.leftMargin: 10
+
     }
 
     InfoPanel{
@@ -35,6 +77,7 @@ Rectangle {
         text: "New User"
         onClicked: {
             newUserClicked();
+            faceCountDown.start();
         }
 
         width: 175
@@ -60,6 +103,23 @@ Rectangle {
         anchors.leftMargin: 10
     }
 
+    CameraButton {
+        id: addUser
+        text: "Add"
+        onClicked: {
+            addClicked();
+            //var listElement = Qt.createComponent("import QtQuick 2.0 ListElement{ name: 'Jeff'}");
+            userModel.append({name : "Jeff", job: "IT", privilege: "Low"} );
+        }
+
+        width: 100
+        height: 35
+        anchors.top: levelWrapper.bottom
+        anchors.topMargin: 5
+        anchors.left: parent.left
+        anchors.leftMargin: 10
+    }
+
     Text{
         id: currentUserText
         text: "Current Users"
@@ -68,18 +128,22 @@ Rectangle {
         color: 'white'
     }
 
+
     Rectangle{
         id: listViewWrapper
         anchors.left: currentUserText.left
         anchors.top: currentUserText.bottom
-        anchors.topMargin: 10
+        anchors.topMargin: 12
         width: 100
         height: 100
 
         color: 'black'
+        anchors.leftMargin: 0
 
     ListView{
         id: currentUsers
+        anchors.rightMargin: -46
+        anchors.bottomMargin: -45
         model: userModel
         anchors.fill: parent
         contentHeight: 400
@@ -91,7 +155,7 @@ Rectangle {
 
     Text{
         id: metaData
-        text: "Meta Data"
+        text: "Metadata"
         color: 'white'
         font.pointSize: 18
         anchors.top: backButton.bottom
